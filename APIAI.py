@@ -80,9 +80,9 @@ if "forex_chat_history" not in st.session_state:
     st.session_state.forex_chat_history = []
 
 if "oracle_session" not in st.session_state:
-    # FIXED: Updated the identifier model string name to follow the official full absolute resource routing path
+    # FIXED: Replaced legacy string with 'gemini-pro' to unlock universal cloud server support
     model = genai.GenerativeModel(
-        model_name="models/gemini-1.5-flash",
+        model_name="gemini-pro",
         system_instruction=SYSTEM_PROMPT
     )
     st.session_state.oracle_session = model.start_chat(history=[])
