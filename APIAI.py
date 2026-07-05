@@ -1,8 +1,56 @@
+import streamlit as st
+import google.generativeai as genai
+import yfinance as yf
+import feedparser
+
+# 1. Page Configuration for optimal mobile browser responsive viewing
+st.set_page_config(
+    page_title="Forex Intelligence Oracle",
+    page_icon="🔮",
+    layout="centered"
+)
+
+# Custom Premium Dark Theme Style Sheets Injection
+st.markdown("""
+    <style>
+    .reportview-container .main .block-container { padding-top: 1.5rem; }
+    .chat-bubble {
+        background-color: #161B22;
+        border: 1px solid #21262D;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+    .macro-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #8B949E;
+        font-weight: bold;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.title("🔮 Forex Fundamental AI Oracle")
+st.markdown("##### Real-Time Online Macroeconomic Prompting & Analysis Engine")
+
+# 2. Get Live Background Market Metrics to pass into the AI context memory banks
+def fetch_live_forex_context():
+    symbols = {"DXY": "DX-Y.NYB", "US10Y": "^TNX", "Gold": "GC=F", "EURUSD": "EURUSD=X", "GBPUSD": "GBPUSD=X"}
+    market_snapshot = ""
+    for key, sym in symbols.items():
+        try:
+            data = yf.Ticker(sym).history(period="2d")
+            if not data.empty:
+                last_price = data['Close'].iloc[-1]
+                pct = ((last_price - data['Close'].iloc[-2]) / data['Close'].iloc[-2]) * 100
+                market_snapshot += f"- {key}: {last_price:.2f} ({pct:+.2f}% change today)\n"
+        except: pass
+    return market_snapshot
 # 3. Securely Initialize Manual API Key Entry Panel
 API_KEY = st.sidebar.text_input("Enter Free Gemini API Key:", type="password")
 
 if not API_KEY:
-    st.info("💡 Action Required: Please verify your Gemini API key in the sidebar input box to turn on your Online AI.")
+    st.info("💡 Action Required: Please expand the left sidebar menu on your screen and input your Gemini API key to activate the Oracle.")
     st.stop()
 
 # Configure the online connection bridge securely using your manual string
@@ -32,7 +80,7 @@ if "forex_chat_history" not in st.session_state:
     st.session_state.forex_chat_history = []
 
 if "oracle_session" not in st.session_state:
-    # FIXED: Replaced legacy string with 'gemini-pro' to unlock universal cloud server support
+    # Uses universally supported 'gemini-pro' path to ensure zero cloud runtime errors
     model = genai.GenerativeModel(
         model_name="gemini-pro",
         system_instruction=SYSTEM_PROMPT
