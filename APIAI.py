@@ -80,9 +80,9 @@ if "forex_chat_history" not in st.session_state:
     st.session_state.forex_chat_history = []
 
 if "oracle_session" not in st.session_state:
-    # Use gemini-1.5-flash which is completely free and optimized for speed
+    # FIXED: Updated the identifier model string name to follow the official full absolute resource routing path
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
+        model_name="models/gemini-1.5-flash",
         system_instruction=SYSTEM_PROMPT
     )
     st.session_state.oracle_session = model.start_chat(history=[])
@@ -103,7 +103,7 @@ if user_input := st.chat_input("Ask about CPI news, interest rate differentials,
     with st.chat_message("assistant"):
         with st.spinner("AI is scraping global fundamentals and tracking intermarket flows..."):
             try:
-                # FIXED CACHING POINTER BUG: Pointed directly and exclusively to st.session_state memory array loops
+                # Pointed directly and exclusively to st.session_state memory array loops
                 response = st.session_state.oracle_session.send_message(user_input)
                 ai_text = response.text
                 st.markdown(ai_text)
