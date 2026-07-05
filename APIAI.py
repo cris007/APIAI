@@ -46,11 +46,11 @@ def fetch_live_forex_context():
                 market_snapshot += f"- {key}: {last_price:.2f} ({pct:+.2f}% change today)\n"
         except: pass
     return market_snapshot
-# 3. Securely Initialize Manual API Key Entry Panel (Your Choice)
+# 3. Securely Initialize Manual API Key Entry Panel
 API_KEY = st.sidebar.text_input("Enter Free Gemini API Key:", type="password")
 
 if not API_KEY:
-    st.info("💡 Action Required: Please generate a free API key at ://google.com, expand the sidebar on your phone, and paste it inside to turn on your Online AI.")
+    st.info("💡 Action Required: Please verify your Gemini API key in the sidebar input box to turn on your Online AI.")
     st.stop()
 
 # Configure the online connection bridge securely using your manual string
@@ -75,7 +75,7 @@ Focus heavily on:
 Keep your layout responses direct, highly analytical, scannable, and formatted with clean bullet points. Avoid generic trading copy.
 """
 
-# Initialize persistent chatbot conversation memory caches
+# Initialize persistent chatbot conversation memory caches cleanly inside st.session_state
 if "forex_chat_history" not in st.session_state:
     st.session_state.forex_chat_history = []
 
@@ -103,7 +103,8 @@ if user_input := st.chat_input("Ask about CPI news, interest rate differentials,
     with st.chat_message("assistant"):
         with st.spinner("AI is scraping global fundamentals and tracking intermarket flows..."):
             try:
-                response = st.oracle_session.send_message(user_input) if hasattr(st.oracle_session, 'send_message') else st.session_state.oracle_session.send_message(user_input)
+                # FIXED CACHING POINTER BUG: Pointed directly and exclusively to st.session_state memory array loops
+                response = st.session_state.oracle_session.send_message(user_input)
                 ai_text = response.text
                 st.markdown(ai_text)
                 st.session_state.forex_chat_history.append({"role": "assistant", "text": ai_text})
